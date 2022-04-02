@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { TextField, Button, Stack, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import NewEntry from './newEntry.jsx';
+import Login from './login.jsx';
 import { goTo } from 'react-chrome-extension-router';
 import { encryptVault, setStorage } from './helpers.js';
 
 function Vault({vault = {}}) {
 
+  console.log(vault);
   const [email, setEmail] = useState('');
   const [vaultData, setVaultData] = useState(vault);
   const [modalOpen, setModalOpen] = useState(false);
@@ -27,8 +29,10 @@ function Vault({vault = {}}) {
     console.log(vaultData)
     const encryptedVault = encryptVault(encryptionKey, vaultData);
     console.log(encryptedVault);
+    console.log(email)
     setStorage(`${email}-vault`, encryptedVault);
     setStorage('session', { current: null });
+    goTo(Login);
   };
 
   const logoutUser = () => {
@@ -67,7 +71,7 @@ function Vault({vault = {}}) {
               </Button>
             );
           })}
-        <Button variant='contained' fullWidth onClick={() => goTo(NewEntry, {vaultData: vaultData, setVaultData: setVaultData})}>
+        <Button variant='contained' fullWidth onClick={() => goTo(NewEntry, {vaultData: vaultData})}>
           Add Password
         </Button>
         <Button variant='contained' fullWidth onClick={() => logoutUser()}>

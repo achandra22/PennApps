@@ -57,11 +57,13 @@ function NewEntry({ vaultData, defaultName = '', defaultUsername = '', defaultPa
         disabled={!validCredentials()}
         onClick={() => {
           const newVault = { ...vault, [name]: { username, password } };
-          // setVaultData(newVault);
           goTo(Vault, { vault: newVault });
         }}
       >
-        Add Credentials
+        {defaultName ? 'Edit Credentials' : 'Add Credentials'}
+      </Button>
+      <Button variant='outlined' sx={{ marginTop: 2 }} fullWidth onClick={() => goTo(Vault, { vault: vaultData })}>
+        Back
       </Button>
     </>
   );
