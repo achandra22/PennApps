@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Stack } from '@mui/material';
+import { TextField, Button, Stack, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import NewEntry from './newEntry.jsx';
 import { goTo } from 'react-chrome-extension-router';
+import { encryptVault, setStorage } from './helpers.js';
 
-function Vault() {
+function Vault({vault = {}}) {
+
   const [email, setEmail] = useState('');
-  const [vaultData, setVaultData] = useState({});
+  const [vaultData, setVaultData] = useState(vault);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [encryptionKey, setEncryptionKey] = useState('');
 
   useEffect(() => {
     chrome.storage.sync.get(['session'], function (session) {
@@ -13,12 +17,30 @@ function Vault() {
     });
   }, []);
 
-  useEffect(() => {
-    chrome.storage.sync.get([`${email}-vault`], function (vault) {
-      console.log(`${email}-vault`);
-      setVaultData(vault[`${email}-vault`]);
-    });
-  }, [email]);
+
+  const handleModalOpen = () => {
+    setModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setModalOpen(false);
+    console.log(vaultData)
+    const encryptedVault = encryptVault(encryptionKey, vaultData);
+    console.log(encryptedVault);
+    setStorage(`${email}-vault`, encryptedVault);
+    setStorage('session', { current: null });
+  };
+
+  const logoutUser = () => {
+    handleModalOpen()
+  };  
+
+  // useEffect(() => {
+  //   chrome.storage.sync.get([`${email}-vault`], function (vault) {
+  //     console.log(`${email}-vault`);
+  //     setVaultData(vault[`${email}-vault`]);
+  //   });
+  // }, [email]);
 
   return (
     <>
@@ -34,6 +56,7 @@ function Vault() {
                 margin='normal'
                 onClick={() => {
                   goTo(NewEntry, {
+                    vaultData: vaultData,
                     defaultName: key,
                     defaultUsername: vaultData[key].username,
                     defaultPassword: vaultData[key].password,
@@ -44,9 +67,32 @@ function Vault() {
               </Button>
             );
           })}
-        <Button variant='contained' fullWidth onClick={() => goTo(NewEntry)}>
+        <Button variant='contained' fullWidth onClick={() => goTo(NewEntry, {vaultData: vaultData, setVaultData: setVaultData})}>
           Add Password
         </Button>
+        <Button variant='contained' fullWidth onClick={() => logoutUser()}>
+          Logout
+        </Button>
+        <Dialog open={modalOpen} onClose={handleModalClose}>
+          <DialogTitle>Logout From PassMan</DialogTitle>
+          <DialogContent>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="master-password-logout"
+              label="Master Password"
+              type="password"
+              fullWidth
+              variant="standard"
+              onChange={(e) => {
+                setEncryptionKey(e.target.value);
+              }}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleModalClose}>Logout</Button>
+          </DialogActions>
+        </Dialog>
       </Stack>
     </>
   );

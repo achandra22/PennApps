@@ -3,7 +3,7 @@ import { Alert, Container, TextField, Button, Typography } from '@mui/material';
 import Vault from './vault.jsx';
 import Login from './login.jsx';
 import { goTo } from 'react-chrome-extension-router';
-import { createLoginHash, createSalt, setStorage } from './helpers.js';
+import { createAuthHash, createSalt, setStorage } from './helpers.js';
 
 function Register() {
   const [email, setEmail] = useState('');
@@ -73,7 +73,7 @@ function Register() {
         disabled={!validRegistration()}
         onClick={() => {
           const salt = createSalt();
-          const loginHash = createLoginHash(password, email, salt);
+          const authHash = createAuthHash(password, email, salt);
           chrome.storage.sync.get(['userDetails'], function (userDetails) {
             let userList = userDetails.userDetails;
             console.log(userList);
@@ -83,12 +83,12 @@ function Register() {
                 goTo(Login);
                 return;
               }
-              userList[email] = { loginHash, salt };
+              userList[email] = { authHash, salt };
             } else {
               userList = {
                 [email]: {
                   salt,
-                  loginHash,
+                  authHash,
                 },
               };
             }

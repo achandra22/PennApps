@@ -3,7 +3,7 @@ import { Container, TextField, Button, Typography } from '@mui/material';
 import Vault from './vault.jsx'
 import Register from './register.jsx'
 import { goTo } from 'react-chrome-extension-router';
-import { createLoginHash, createMasterKey } from './helpers.js';
+import { createAuthHash, decryptVault } from './helpers.js';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -20,9 +20,13 @@ function Login() {
         if (!(email in userList)) {
           alert('Invalid credentials');
         } else {
-          const hash = createLoginHash(password, email, userList[email].salt);
-          if (hash === userList[email]['loginHash']) {
-            goTo(Vault)
+          const hash = createAuthHash(password, email, userList[email].salt);
+          if (hash === userList[email]['authHash']) {
+            chrome.storage.sync.get([`${email}-vault`], function (vault) {
+              const decryptedVault = decryptVault(password, vault[`${email}-vault`]);
+              console.log(decryptedVault); 
+            });
+            goTo(Vault);
           } else {
             alert('Invalid credentials');
           }

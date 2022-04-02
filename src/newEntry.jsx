@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { TextField, Button, Stack } from '@mui/material';
 import { goTo } from 'react-chrome-extension-router';
 import Vault from './vault.jsx';
-import { encrypt } from './helpers.js';
+// import { encrypt } from './helpers.js';
 
-function NewEntry({ defaultName = '', defaultUsername = '', defaultPassword = '' }) {
+function NewEntry({ vaultData, defaultName = '', defaultUsername = '', defaultPassword = '' }) {
+  const [vault] = useState(vaultData);
   const [name, setName] = useState(defaultName);
   const [username, setUsername] = useState(defaultUsername);
   const [password, setPassword] = useState(defaultPassword);
@@ -21,6 +22,7 @@ function NewEntry({ defaultName = '', defaultUsername = '', defaultPassword = ''
         name='name'
         margin='normal'
         fullWidth
+        value={name}
         onChange={(e) => {
           setName(e.target.value);
         }}
@@ -31,6 +33,7 @@ function NewEntry({ defaultName = '', defaultUsername = '', defaultPassword = ''
         name='username'
         margin='normal'
         fullWidth
+        value={username}
         onChange={(e) => {
           setUsername(e.target.value);
         }}
@@ -42,6 +45,7 @@ function NewEntry({ defaultName = '', defaultUsername = '', defaultPassword = ''
         margin='normal'
         type='password'
         fullWidth
+        value={password}
         onChange={(e) => {
           setPassword(e.target.value);
         }}
@@ -52,8 +56,9 @@ function NewEntry({ defaultName = '', defaultUsername = '', defaultPassword = ''
         fullWidth
         disabled={!validCredentials()}
         onClick={() => {
-          encryt();
-          goTo(Vault);
+          const newVault = { ...vault, [name]: { username, password } };
+          // setVaultData(newVault);
+          goTo(Vault, { vault: newVault });
         }}
       >
         Add Credentials
