@@ -25,7 +25,6 @@ function Login() {
             setStorage('session', { current: email });
             chrome.storage.sync.get([`${email}-vault`], function (vault) {
               const decryptedVault = decryptVault(password, vault[`${email}-vault`]);
-              console.log(decryptedVault); 
               goTo(Vault, { vault: decryptedVault });
             });
           } else {

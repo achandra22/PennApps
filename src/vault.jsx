@@ -7,7 +7,6 @@ import { encryptVault, setStorage } from './helpers.js';
 
 function Vault({vault = {}}) {
 
-  console.log(vault);
   const [email, setEmail] = useState('');
   const [vaultData, setVaultData] = useState(vault);
   const [modalOpen, setModalOpen] = useState(false);
@@ -26,10 +25,7 @@ function Vault({vault = {}}) {
 
   const handleModalClose = () => {
     setModalOpen(false);
-    console.log(vaultData)
     const encryptedVault = encryptVault(encryptionKey, vaultData);
-    console.log(encryptedVault);
-    console.log(email)
     setStorage(`${email}-vault`, encryptedVault);
     setStorage('session', { current: null });
     goTo(Login);
@@ -38,13 +34,6 @@ function Vault({vault = {}}) {
   const logoutUser = () => {
     handleModalOpen()
   };  
-
-  // useEffect(() => {
-  //   chrome.storage.sync.get([`${email}-vault`], function (vault) {
-  //     console.log(`${email}-vault`);
-  //     setVaultData(vault[`${email}-vault`]);
-  //   });
-  // }, [email]);
 
   return (
     <>

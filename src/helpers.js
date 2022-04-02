@@ -2,7 +2,7 @@ const forge = require('node-forge');
 
 export const createMasterKey = (payload, salt) => {
   // A key of 32 bytes will use AES-256
-  return forge.pkcs5.pbkdf2(payload, salt, 50000, 32);
+  return forge.pkcs5.pbkdf2(payload, salt, 100000, 32);
 };
 
 export const createMasterPasswordHash = (payload, salt) => {
@@ -17,7 +17,7 @@ export const createSalt = () => {
 export const createAuthHash = (masterPassword, username, salt) => {
   const masterKey = createMasterKey(masterPassword, username);
   const masterPasswordHash = forge.pkcs5.pbkdf2(masterKey, masterPassword, 1, 32);
-  return forge.pkcs5.pbkdf2(masterPasswordHash, salt, 50000, 32);
+  return forge.pkcs5.pbkdf2(masterPasswordHash, salt, 100000, 32);
 };
 
 export const encrypt = (plaintext, encryptionKey, salt) => {
@@ -71,17 +71,35 @@ export const encryptVault = (encryptionKey, vault) => {
   return encryptedVault;
 }
 
-// export const getStorage = async (key) => {
-//   let value = await new Promise(resolve => {
-//       chrome.storage.sync.get([key], (object) => {
-//           resolve(object);
-//       });
-//   })
-//   return value;
-// }
-
 export const setStorage = (key, value) => {
   chrome.storage.sync.set({ [key]: value }, function () {
     console.log(key + ' is in storage');
   });
 };
+
+const secureRandomInt = (max) => {
+  let num = 0;
+  const min = 2 ** 32 % max; // for eliminating bias
+  const rand = new Uint32Array(1);
+
+  do {
+    num = crypto.getRandomValues(rand)[0];
+  } while (num < min);
+
+  return num % max;
+}
+
+export const generatePassword = (length = 16) => {
+  const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+  const numbers = '0123456789';
+  const symbols = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~';
+  const all = uppercase + lowercase + numbers + symbols;
+
+  let password = '';
+  for (let i = 0; i < length; i++) {
+    const randomIndex = secureRandomInt(all.length)
+    password += all[randomIndex];
+  }
+  return password;
+}

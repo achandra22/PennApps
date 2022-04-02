@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
-import { TextField, Button, Stack } from '@mui/material';
+import { TextField, Button, IconButton, InputAdornment } from '@mui/material';
+import AutorenewIcon from '@mui/icons-material/Autorenew';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { goTo } from 'react-chrome-extension-router';
 import Vault from './vault.jsx';
+import { generatePassword } from './helpers.js';
 // import { encrypt } from './helpers.js';
 
 function NewEntry({ vaultData, defaultName = '', defaultUsername = '', defaultPassword = '' }) {
@@ -9,10 +13,12 @@ function NewEntry({ vaultData, defaultName = '', defaultUsername = '', defaultPa
   const [name, setName] = useState(defaultName);
   const [username, setUsername] = useState(defaultUsername);
   const [password, setPassword] = useState(defaultPassword);
+  const [showPassword, setShowPassword] = useState(false);
 
   const validCredentials = () => {
     return password.length > 0 && username.length > 0 && name.length > 0;
   };
+
 
   return (
     <>
@@ -43,11 +49,23 @@ function NewEntry({ vaultData, defaultName = '', defaultUsername = '', defaultPa
         label='Password'
         name='password'
         margin='normal'
-        type='password'
+        type={showPassword ? 'text' : 'password'}
         fullWidth
         value={password}
         onChange={(e) => {
           setPassword(e.target.value);
+        }}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton edge="end" color="primary" onClick={() => setPassword(generatePassword())}>
+                <AutorenewIcon />
+              </IconButton>
+              <IconButton edge="end" color="primary" onClick={() => setShowPassword(prev => !prev)}>
+                {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
+              </IconButton>
+            </InputAdornment>
+          ),
         }}
       />
 
@@ -56,6 +74,7 @@ function NewEntry({ vaultData, defaultName = '', defaultUsername = '', defaultPa
         fullWidth
         disabled={!validCredentials()}
         onClick={() => {
+          console.log(generatePassword())
           const newVault = { ...vault, [name]: { username, password } };
           goTo(Vault, { vault: newVault });
         }}
