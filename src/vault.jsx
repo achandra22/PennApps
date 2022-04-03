@@ -3,7 +3,7 @@ import { TextField, Button, Stack, Dialog, DialogActions, DialogContent, DialogT
 import NewEntry from './newEntry.jsx';
 import Login from './login.jsx';
 import { goTo } from 'react-chrome-extension-router';
-import { encryptVault, setStorage } from './helpers.js';
+import { encryptVault, setStorage, createAuthHash } from './helpers.js';
 
 function Vault({vault = {}}) {
   const [email, setEmail] = useState('');
@@ -25,12 +25,20 @@ function Vault({vault = {}}) {
   };
 
   const handleModalClose = () => {
-    setModalOpen(false);
-    const encryptedVault = encryptVault(encryptionKey, vaultData);
-    setStorage(`${email}-vault`, encryptedVault);
-    setStorage('session', { current: null });
-    goTo(Login);
-  };
+    chrome.storage.sync.get(['userDetails'], function(userDetails) {
+      const userList = userDetails.userDetails;
+      const hash = createAuthHash(encryptionKey, email, userList[email].salt);
+      if (hash === userList[email]['authHash']) {
+        setModalOpen(false);
+        const encryptedVault = encryptVault(encryptionKey, vaultData);
+        setStorage(`${email}-vault`, encryptedVault);
+        setStorage('session', { current: null });
+        goTo(Login);
+      } else {
+        alert('Invalid credentials');
+      }
+    });
+  }
 
   const logoutUser = () => {
     handleModalOpen()

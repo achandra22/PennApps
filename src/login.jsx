@@ -15,7 +15,7 @@ function Login() {
 
   const authenticateUser = (email, password) => {
     chrome.storage.sync.get(['userDetails'], function(userDetails) {
-      let userList = userDetails.userDetails;
+      const userList = userDetails.userDetails;
       if (userList) {  
         if (!(email in userList)) {
           alert('Invalid credentials');
