@@ -1,4 +1,5 @@
 const forge = require('node-forge');
+const passwordCheck = require('@marcusfernstrom/asva-password')
 
 export const createMasterKey = (payload, salt) => {
   // A key of 32 bytes will use AES-256
@@ -26,12 +27,10 @@ export const encrypt = (plaintext, encryptionKey, salt) => {
   cipher.update(forge.util.createBuffer(plaintext));
   cipher.finish();
   const encrypted = cipher.output;
-  console.log(encrypted.toHex());
   return encrypted;
 };
 
 export const decrypt = (ciphertext, decryptionKey, salt) => {
-  console.log(ciphertext, decryptionKey, salt);
   const decipher = forge.cipher.createDecipher('AES-CBC', createMasterKey(decryptionKey, salt));
   decipher.start({iv: salt});
   decipher.update(forge.util.createBuffer(ciphertext));
@@ -102,4 +101,8 @@ export const generatePassword = (length = 16) => {
     password += all[randomIndex];
   }
   return password;
+}
+
+export const validatePasswordStrength = (password) => {
+  return passwordCheck(password);
 }

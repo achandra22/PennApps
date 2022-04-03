@@ -6,10 +6,9 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { goTo } from 'react-chrome-extension-router';
 import Vault from './vault.jsx';
 import { generatePassword } from './helpers.js';
-// import { encrypt } from './helpers.js';
 
 function NewEntry({ vaultData, defaultName = '', defaultUsername = '', defaultPassword = '' }) {
-  const [vault] = useState(vaultData);
+  const [vault, setVault] = useState(vaultData);
   const [name, setName] = useState(defaultName);
   const [username, setUsername] = useState(defaultUsername);
   const [password, setPassword] = useState(defaultPassword);
@@ -19,6 +18,15 @@ function NewEntry({ vaultData, defaultName = '', defaultUsername = '', defaultPa
     return password.length > 0 && username.length > 0 && name.length > 0;
   };
 
+  const deleteCredentials = () => {
+    if (vault[name]) {
+      const updatedVault = { ...vault };
+      delete updatedVault[name];
+      goTo(Vault, { vault: updatedVault });
+    } else {
+      goTo(Vault, { vault: vault });
+    }
+  };
 
   return (
     <>
@@ -74,12 +82,14 @@ function NewEntry({ vaultData, defaultName = '', defaultUsername = '', defaultPa
         fullWidth
         disabled={!validCredentials()}
         onClick={() => {
-          console.log(generatePassword())
           const newVault = { ...vault, [name]: { username, password } };
           goTo(Vault, { vault: newVault });
         }}
       >
         {defaultName ? 'Edit Credentials' : 'Add Credentials'}
+      </Button>
+      <Button color='error' variant='outlined' fullWidth sx={{ marginTop: 2 }} onClick={() => deleteCredentials()}>
+        Delete Credentials
       </Button>
       <Button variant='outlined' sx={{ marginTop: 2 }} fullWidth onClick={() => goTo(Vault, { vault: vaultData })}>
         Back

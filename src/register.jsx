@@ -3,24 +3,28 @@ import { Alert, Container, TextField, Button, Typography } from '@mui/material';
 import Vault from './vault.jsx';
 import Login from './login.jsx';
 import { goTo } from 'react-chrome-extension-router';
-import { createAuthHash, createSalt, setStorage } from './helpers.js';
+import { createAuthHash, createSalt, setStorage, validatePasswordStrength } from './helpers.js';
 
 function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [password2, setPassword2] = useState('');
-  const [matchingPasswords, setMatchingPasswords] = useState(true);
+  const [passwordError, setPasswordError] = useState('');
 
   const passwordValidation = () => {
     if (password === password2 || password === '' || password2 === '') {
-      setMatchingPasswords(true);
+      if (validatePasswordStrength(password).passed) {
+        setPasswordError('');
+      } else {
+        setPasswordError('Password is not strong enough');
+      }
     } else {
-      setMatchingPasswords(false);
+      setPasswordError('Passwords do not match');
     }
   };
 
   const validRegistration = () => {
-    return matchingPasswords && email && password && password2;
+    return passwordError === '' && email && password && password2;
   };
 
   return (
@@ -65,7 +69,7 @@ function Register() {
         }}
         onBlur={passwordValidation}
       />
-      {!matchingPasswords && <Alert severity='error'>Passwords Do Not Match</Alert>}
+      {passwordError != '' && <Alert severity='error'>{passwordError}</Alert>}
       <Button
         id='login-user-btn'
         type='submit'
