@@ -12,21 +12,6 @@ const theme = createTheme({
     primary: {
       main: '#38405f',
     },
-  // components: {
-  //   // Name of the component
-  //   MuiButton: {
-  //     styleOverrides: {
-  //       // Name of the slot
-  //       root: {
-  //         backgroundColor: '#38405f',
-  //         color: '#fff',
-  //         '&:hover': {
-  //           backgroundColor: '#232F40',
-  //           color: '#fff'
-  //         }
-  //       },
-  //     },
-  //   },
   },
 });
 

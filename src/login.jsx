@@ -3,7 +3,7 @@ import { Container, TextField, Button, Typography, Stack } from '@mui/material';
 import Vault from './vault.jsx'
 import Register from './register.jsx'
 import { goTo } from 'react-chrome-extension-router';
-import { createAuthHash, decryptVault, setStorage } from './helpers.js';
+import { createAuthHash, decryptVault, setStorage, hashValue } from './helpers.js';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -23,8 +23,9 @@ function Login() {
           const hash = createAuthHash(password, email, userList[email].salt);
           if (hash === userList[email]['authHash']) {
             setStorage('session', { current: email });
-            chrome.storage.sync.get([`${email}-vault`], function (vault) {
-              const decryptedVault = decryptVault(password, vault[`${email}-vault`]);
+            const hashedEmail = hashValue(email);
+            chrome.storage.sync.get([`${hashedEmail}-vault`], function (vault) {
+              const decryptedVault = decryptVault(password, vault[`${hashedEmail}-vault`], userList[email].salt);
               goTo(Vault, { vault: decryptedVault });
             });
           } else {
@@ -65,6 +66,7 @@ function Login() {
         }}
       />
       <Button
+        sx={{marginTop: 2}}
         id='login-user-btn'
         variant='contained'
         type='submit'
