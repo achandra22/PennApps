@@ -3,7 +3,13 @@ import { Alert, Container, TextField, Button, Typography, Stack } from '@mui/mat
 import Vault from './vault.jsx';
 import Login from './login.jsx';
 import { goTo } from 'react-chrome-extension-router';
-import { createAuthHash, createSalt, hashValue, setStorage, validatePasswordStrength } from './helpers.js';
+import {
+  createAuthHash,
+  createSalt,
+  hashValue,
+  setStorage,
+  validatePasswordStrength,
+} from './helpers.js';
 
 function Register() {
   const [email, setEmail] = useState('');
@@ -58,8 +64,16 @@ function Register() {
   return (
     <Container>
       <Stack direction='row'>
-        <img src='assets/icon48.png' alt='logo' height='48px' width='48px' style={{marginTop:'10px'}}/>
-        <Typography variant='h4' sx={{ margin: 2, fontWeight: 600  }}>Register</Typography>
+        <img
+          src='assets/icon48.png'
+          alt='logo'
+          height='48px'
+          width='48px'
+          style={{ marginTop: '10px' }}
+        />
+        <Typography variant='h4' sx={{ margin: 2, fontWeight: 600 }}>
+          Register
+        </Typography>
       </Stack>
       <TextField
         margin='dense'
@@ -102,7 +116,7 @@ function Register() {
       <Button
         id='login-user-btn'
         variant='contained'
-        sx={{marginTop: 1}}
+        sx={{ marginTop: 1 }}
         type='submit'
         fullWidth
         disabled={!validRegistration()}
@@ -110,7 +124,7 @@ function Register() {
       >
         Register
       </Button>
-      <Button id='nav-login-btn' sx={{marginTop: 1}} fullWidth onClick={() => goTo(Login)}>
+      <Button id='nav-login-btn' sx={{ marginTop: 1 }} fullWidth onClick={() => goTo(Login)}>
         Login Instead?
       </Button>
     </Container>
@@ -118,4 +132,3 @@ function Register() {
 }
 
 export default Register;
-

@@ -65,11 +65,19 @@ function NewEntry({ vaultData, defaultName = '', defaultUsername = '', defaultPa
         }}
         InputProps={{
           endAdornment: (
-            <InputAdornment position="end">
-              <IconButton edge="end" color="primary" onClick={() => setPassword(generatePassword())}>
+            <InputAdornment position='end'>
+              <IconButton
+                edge='end'
+                color='primary'
+                onClick={() => setPassword(generatePassword())}
+              >
                 <AutorenewIcon />
               </IconButton>
-              <IconButton edge="end" color="primary" onClick={() => setShowPassword(prev => !prev)}>
+              <IconButton
+                edge='end'
+                color='primary'
+                onClick={() => setShowPassword((prev) => !prev)}
+              >
                 {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
               </IconButton>
             </InputAdornment>
@@ -88,10 +96,21 @@ function NewEntry({ vaultData, defaultName = '', defaultUsername = '', defaultPa
       >
         {defaultName ? 'Edit Credentials' : 'Add Credentials'}
       </Button>
-      <Button color='error' variant='outlined' fullWidth sx={{ marginTop: 2 }} onClick={() => deleteCredentials()}>
+      <Button
+        color='error'
+        variant='outlined'
+        fullWidth
+        sx={{ marginTop: 2 }}
+        onClick={() => deleteCredentials()}
+      >
         Delete Credentials
       </Button>
-      <Button variant='outlined' sx={{ marginTop: 2 }} fullWidth onClick={() => goTo(Vault, { vault: vaultData })}>
+      <Button
+        variant='outlined'
+        sx={{ marginTop: 2 }}
+        fullWidth
+        onClick={() => goTo(Vault, { vault: vaultData })}
+      >
         Back
       </Button>
     </>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Container, TextField, Button, Typography, Stack } from '@mui/material';
-import Vault from './vault.jsx'
-import Register from './register.jsx'
+import Vault from './vault.jsx';
+import Register from './register.jsx';
 import { goTo } from 'react-chrome-extension-router';
 import { createAuthHash, decryptVault, setStorage, hashValue } from './helpers.js';
 
@@ -14,9 +14,9 @@ function Login() {
   };
 
   const authenticateUser = (email, password) => {
-    chrome.storage.sync.get(['userDetails'], function(userDetails) {
+    chrome.storage.sync.get(['userDetails'], function (userDetails) {
       const userList = userDetails.userDetails;
-      if (userList) {  
+      if (userList) {
         if (!(email in userList)) {
           alert('Invalid credentials');
         } else {
@@ -25,7 +25,11 @@ function Login() {
             setStorage('session', { current: email });
             const hashedEmail = hashValue(email);
             chrome.storage.sync.get([`${hashedEmail}-vault`], function (vault) {
-              const decryptedVault = decryptVault(password, vault[`${hashedEmail}-vault`], userList[email].salt);
+              const decryptedVault = decryptVault(
+                password,
+                vault[`${hashedEmail}-vault`],
+                userList[email].salt
+              );
               goTo(Vault, { vault: decryptedVault });
             });
           } else {
@@ -39,8 +43,16 @@ function Login() {
   return (
     <Container>
       <Stack direction='row'>
-        <img src='assets/icon48.png' alt='logo' height='48px' width='48px' style={{marginTop:'10px'}}/>
-        <Typography variant='h4' sx={{ margin: 2, fontWeight: 600  }}>Login</Typography>
+        <img
+          src='assets/icon48.png'
+          alt='logo'
+          height='48px'
+          width='48px'
+          style={{ marginTop: '10px' }}
+        />
+        <Typography variant='h4' sx={{ margin: 2, fontWeight: 600 }}>
+          Login
+        </Typography>
       </Stack>
       <TextField
         margin='normal'
@@ -66,7 +78,7 @@ function Login() {
         }}
       />
       <Button
-        sx={{marginTop: 2}}
+        sx={{ marginTop: 2 }}
         id='login-user-btn'
         variant='contained'
         type='submit'
@@ -78,16 +90,11 @@ function Login() {
       >
         Login
       </Button>
-      <Button
-        id='nav-register-btn'
-        fullWidth
-        onClick={() => goTo(Register)}
-        sx={{ marginTop: 1 }}
-      >
+      <Button id='nav-register-btn' fullWidth onClick={() => goTo(Register)} sx={{ marginTop: 1 }}>
         Register Instead?
       </Button>
     </Container>
-  )
+  );
 }
 
-export default Login
+export default Login;
