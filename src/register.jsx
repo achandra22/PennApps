@@ -15,22 +15,30 @@ function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [password2, setPassword2] = useState('');
-  const [passwordError, setPasswordError] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
 
   const passwordValidation = () => {
     if (password === password2 || password === '' || password2 === '') {
       if (validatePasswordStrength(password).passed) {
-        setPasswordError('');
+        setErrorMsg('');
       } else {
-        setPasswordError('Password is not strong enough');
+        setErrorMsg('Password is not strong enough');
       }
     } else {
-      setPasswordError('Passwords do not match');
+      setErrorMsg('Passwords do not match');
+    }
+  };
+
+  const emailValidation = () => {
+    if (!String(email).toLowerCase().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)) {
+      setErrorMsg('Invalid email');
+    } else {
+      setErrorMsg('');
     }
   };
 
   const validRegistration = () => {
-    return passwordError === '' && email && password && password2;
+    return errorMsg === '' && email && password && password2;
   };
 
   const registerUser = () => {
@@ -85,6 +93,7 @@ function Register() {
         onChange={(e) => {
           setEmail(e.target.value);
         }}
+        onBlur={emailValidation}
       />
       <TextField
         margin='dense'
@@ -112,7 +121,7 @@ function Register() {
         }}
         onBlur={passwordValidation}
       />
-      {passwordError != '' && <Alert severity='error'>{passwordError}</Alert>}
+      {errorMsg != '' && <Alert severity='error'>{errorMsg}</Alert>}
       <Button
         id='login-user-btn'
         variant='contained'
