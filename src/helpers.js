@@ -5,7 +5,7 @@ const passwordCheck = require('@marcusfernstrom/asva-password');
 
 export const createMasterKey = (payload, salt) => {
   // A key of 32 bytes will use AES-256
-  return forge.pkcs5.pbkdf2(payload, salt, 50000, 32);
+  return forge.pkcs5.pbkdf2(payload, salt, 100000, 32);
 };
 
 export const createMasterPasswordHash = (payload, salt) => {
@@ -20,7 +20,7 @@ export const createSalt = () => {
 export const createAuthHash = (masterPassword, username, salt) => {
   const masterKey = createMasterKey(masterPassword, username);
   const masterPasswordHash = forge.pkcs5.pbkdf2(masterKey, masterPassword, 1, 32);
-  return forge.pkcs5.pbkdf2(masterPasswordHash, salt, 50000, 32);
+  return forge.pkcs5.pbkdf2(masterPasswordHash, salt, 100000, 32);
 };
 
 export const encrypt = (plaintext, encryptionKey, iv) => {
