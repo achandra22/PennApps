@@ -5,7 +5,7 @@ const passwordCheck = require('@marcusfernstrom/asva-password');
 
 export const createMasterKey = (payload, salt) => {
   // A key of 32 bytes will use AES-256
-  return forge.pkcs5.pbkdf2(payload, salt, 100000, 32);
+  return forge.pkcs5.pbkdf2(payload, salt, 50000, 32);
 };
 
 export const createMasterPasswordHash = (payload, salt) => {
@@ -20,7 +20,7 @@ export const createSalt = () => {
 export const createAuthHash = (masterPassword, username, salt) => {
   const masterKey = createMasterKey(masterPassword, username);
   const masterPasswordHash = forge.pkcs5.pbkdf2(masterKey, masterPassword, 1, 32);
-  return forge.pkcs5.pbkdf2(masterPasswordHash, salt, 100000, 32);
+  return forge.pkcs5.pbkdf2(masterPasswordHash, salt, 50000, 32);
 };
 
 export const encrypt = (plaintext, encryptionKey, iv) => {
@@ -45,6 +45,7 @@ export const decryptVault = (key, vault, salt) => {
   Object.keys(vault).forEach((key) => {
     const decryptedKey = decrypt(forge.util.hexToBytes(key), decryptionKey, salt);
     const data = decrypt(vault[key].data, decryptionKey, salt);
+    console.log(data.substring(0, data.indexOf('}') + 1))
     decryptedVault[decryptedKey] = JSON.parse(data.substring(0, data.indexOf('}') + 1));
   });
   return decryptedVault;
@@ -93,7 +94,7 @@ export const generatePassword = (length = 16) => {
   const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   const lowercase = 'abcdefghijklmnopqrstuvwxyz';
   const numbers = '0123456789';
-  const symbols = '!#$%&()*+,-./:;<=>?@[\\]^_`{|}~';
+  const symbols = '!#$%&()*+,-./:;<=>?@[\\]^_|~';
   const all = uppercase + lowercase + numbers + symbols;
 
   let password = '';
