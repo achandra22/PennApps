@@ -1,5 +1,3 @@
-import cipher from 'node-forge/lib/cipher';
-
 const forge = require('node-forge');
 const passwordCheck = require('@marcusfernstrom/asva-password');
 
