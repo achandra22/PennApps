@@ -1,2 +1,2 @@
-# PassMan
-A chrome extension that allows you to store and manage passwords securely
+# SustainaBuddy
+A chrome extension that allows you to make more sustainable choices when shopping online
