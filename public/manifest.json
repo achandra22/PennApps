@@ -1,14 +1,12 @@
 {
-  "name": "PassMan",
-  "description": "A chrome extension that allows you to store and manage passwords securely",
+  "name": "SustainaBuddy",
+  "description": "A Chrome Extension to help you make more sustainable choices when online shopping",
   "version": "1.0",
   "manifest_version": 3,
   "action": {
     "default_popup": "popup.html"
   },
-  "permissions": [
-    "storage"
-  ],
+  "permissions": ["storage"],
   "icons": {
     "16": "assets/icon16.png",
     "128": "assets/icon128.png"
