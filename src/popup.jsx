@@ -1,9 +1,10 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { goTo, Router } from 'react-chrome-extension-router';
-import { Divider, Slider, Stack, Typography, Button } from '@mui/material';
+import { Box, Divider, Slider, Stack, Typography } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { capitalizeFirstLetter } from './helpers';
+import { capitalizeFirstLetter, getBrandData } from './helpers';
+import plant from '../dist/assets/plant.gif';
 
 const theme = createTheme({
   palette: {
@@ -17,44 +18,76 @@ const theme = createTheme({
 });
 
 function Popup() {
-  const [pageName, setPageName] = React.useState('Home');
+  const [pageName, setPageName] = React.useState(null);
+  const [brandData, setBrandData] = React.useState(null);
+
+  const getIcon = (score) => {
+    if (score == 1) {
+      return '😭';
+    } else if (score == 2) {
+      return '😔';
+    } else if (score == 3) {
+      return '🤔';
+    } else if (score == 4) {
+      return '🙂';
+    } else {
+      return '😁';
+    }
+  };
+
   React.useEffect(() => {
     chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
       setPageName(capitalizeFirstLetter(tabs[0].url.replace(/.+\/\/|www.|\..+/g, '')));
+      setBrandData(getBrandData(tabs[0].url.replace(/.+\/\/|www.|\..+/g, '')));
     });
-    // getBrandData(tabs[0].url.replace(/.+\/\/|www.|\..+/g, ''));
   }, []);
 
   return (
     <ThemeProvider theme={theme}>
       <Router>
-        <Typography variant='h4' component='h1' gutterBottom>
-          {pageName}
-        </Typography>
-        <Divider />
-        <Typography variant='h6' component='h2' gutterBottom>
-          Sustainability Score: {'2 / 5'}
-        </Typography>
-        <Typography variant='body1' gutterBottom>
-          Zara is not taking adequate steps to ensure payment of a living wage for its workers.
-        </Typography>
-        <Divider />
-        <Typography variant='h6' component='h2' gutterBottom>
-          The Breakdown...
-        </Typography>
-        <Typography id='input-slider' gutterBottom>
-          Planet
-        </Typography>
-        <Slider min={0} max={5} defaultValue={2} disabled />
-        <Typography id='input-slider' gutterBottom>
-          People
-        </Typography>
-        <Slider min={0} max={5} defaultValue={2} disabled />
-        <Typography id='input-slider' gutterBottom>
-          Animals
-        </Typography>
-        <Slider min={0} max={5} defaultValue={2} disabled />
-        <Button onClick={() => setPageName(scrapeSustainabilityData())}>About</Button>
+        {brandData ? (
+          <>
+            <Typography variant='h4' component='h1' gutterBottom>
+              {pageName}
+            </Typography>
+            <Divider />
+            <Typography variant='h6' component='h2' gutterBottom mt={1}>
+              {getIcon(brandData.rating)}{' '}
+              {brandData.rating > 3 ? 'Sustainable Choice!' : 'Not Sustainable'}{' '}
+            </Typography>
+            <Typography variant='body1' gutterBottom>
+              {brandData.description}
+            </Typography>
+            <Divider />
+            <Typography variant='h6' component='h2' gutterBottom mt={1}>
+              The Breakdown...
+            </Typography>
+            <Typography id='input-slider' gutterBottom>
+              Planet Score: {`${brandData.planet} / 5`}
+            </Typography>
+            <Slider min={0} max={5} defaultValue={brandData.planet} disabled />
+            <Typography id='input-slider' gutterBottom>
+              People Score: {`${brandData.people} / 5`}
+            </Typography>
+            <Slider min={0} max={5} defaultValue={brandData.people} disabled />
+            <Typography id='input-slider' gutterBottom>
+              Animals Score: {`${brandData.animals} / 5`}
+            </Typography>
+            <Slider min={0} max={5} defaultValue={brandData.animals} disabled />
+            <a href={brandData.url} target='_blank'>
+              More Information
+            </a>
+          </>
+        ) : (
+          <Box height='100%' display='flex' alignItems='center' justifyContent={'center'}>
+            <Stack alignItems={'center'}>
+              <img src={plant} alt='plant' height='200px' width='200px' />
+              <Typography align='center' variant='h6' component='h1' gutterBottom>
+                Unfortunately we don't have any data on this brand yet.
+              </Typography>
+            </Stack>
+          </Box>
+        )}
       </Router>
     </ThemeProvider>
   );
